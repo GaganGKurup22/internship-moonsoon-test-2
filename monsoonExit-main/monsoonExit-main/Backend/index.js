@@ -46,14 +46,18 @@ app.delete("/removedetails/:id", async (req, res) => {
 // PUT API to update a blog post by ID
 app.put("/update/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-    const updatedBlog = await BlogModel.findByIdAndUpdate(id, req.body, { new: true });
+    const { id } = req.params; // Extract ID from the URL parameters
+    const updatedBlog = await BlogModel.findByIdAndUpdate(id, req.body, { new: true }); // Update and return the new document
+    if (!updatedBlog) {
+      return res.status(404).send({ message: "Blog post not found" }); // Handle case where the ID does not match any document
+    }
     res.send({ message: "Blog post updated successfully", updatedBlog });
   } catch (error) {
     res.status(500).send({ message: "Error updating blog post", error });
   }
 });
 
+
 app.listen(PORT, () => {
-  console.log(`${PORT} is up and running`);
+  console.log(`${PORT} is up and running`); // Correct template literal syntax
 });

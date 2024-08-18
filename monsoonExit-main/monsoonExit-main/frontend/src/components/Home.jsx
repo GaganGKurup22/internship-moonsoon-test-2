@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Typography, Card, CardContent, CardActions, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/")
-      .then((res) => setPosts(res.data.posts))
+      .get("http://localhost:3001/details")
+      .then((res) => setPosts(res.data))
       .catch((err) => console.log(err));
   }, []);
 
   const deletePost = (id) => {
     axios
-      .delete(`http://localhost:3001/delete/${id}`)
+      .delete(`http://localhost:3001/removedetails/${id}`)
       .then((res) => {
         alert(res.data.message);
         setPosts(posts.filter((post) => post._id !== id));
@@ -23,8 +25,7 @@ const Home = () => {
   };
 
   const updatePost = (id) => {
-    // Update logic here
-    console.log("Update post with ID:", id);
+    navigate(`/update/${id}`);
   };
 
   return (

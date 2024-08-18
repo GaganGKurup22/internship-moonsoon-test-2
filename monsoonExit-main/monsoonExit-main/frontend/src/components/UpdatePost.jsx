@@ -1,32 +1,37 @@
-import { Box, Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Box, TextField, Button } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
 
-const Add = () => {
+const UpdatePost = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [inputs, setInputs] = useState({
+  const [post, setPost] = useState({
     title: "",
     content: "",
     img_url: "",
   });
 
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/details/${id}`)
+      .then((res) => setPost(res.data))
+      .catch((err) => console.log(err));
+  }, [id]);
+
   const inputHandler = (e) => {
-    setInputs({ ...inputs, [e.target.name]: e.target.value });
+    setPost({ ...post, [e.target.name]: e.target.value });
   };
 
-  const addData = (e) => {
-    e.preventDefault(); // Prevent default form submission
+  const updateData = (e) => {
+    e.preventDefault();
     axios
-      .post("http://localhost:3001/add", inputs)
+      .put(`http://localhost:3001/update/${id}`, post)
       .then((res) => {
         alert(res.data.message);
         navigate("/");
       })
-      .catch((err) => {
-        console.log(err);
-        alert("Error adding data. Please try again.");
-      });
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -41,7 +46,7 @@ const Add = () => {
     >
       <Box
         component="form"
-        onSubmit={addData} // Handle form submission
+        onSubmit={updateData}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -54,7 +59,7 @@ const Add = () => {
           placeholder="Title"
           onChange={inputHandler}
           name="title"
-          value={inputs.title}
+          value={post.title}
           fullWidth
           required
         />
@@ -63,9 +68,9 @@ const Add = () => {
           placeholder="Content"
           onChange={inputHandler}
           name="content"
-          value={inputs.content}
+          value={post.content}
           multiline
-          rows={4} // Set the number of visible rows for multiline
+          rows={4}
           required
         />
         <TextField
@@ -73,15 +78,15 @@ const Add = () => {
           placeholder="Image URL"
           onChange={inputHandler}
           name="img_url"
-          value={inputs.img_url}
+          value={post.img_url}
           required
         />
-        <Button type="submit" variant="contained" color="secondary">
-          Submit
+        <Button type="submit" variant="contained" color="primary">
+          Update
         </Button>
       </Box>
     </Box>
   );
 };
 
-export default Add;
+export default UpdatePost;
